@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup>
+  <OutputType>WinExe</OutputType>
+  <TargetFramework>net9.0-windows10.0.17763.0</TargetFramework>
+  <UseWindowsForms>true</UseWindowsForms>
+  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  <SignAssembly>False</SignAssembly>
+  <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+ </PropertyGroup>
+ <ItemGroup>
+   <None Include="..\.editorconfig" Link=".editorconfig" />
+ </ItemGroup>
+ <ItemGroup>
+   <PackageReference Include="Google.Apis.Drive.v3" Version="1.69.0.3740" />
+   <PackageReference Include="Vanara.PInvoke.PortableDeviceApi" Version="4.1.3" />
+ </ItemGroup>
+</Project>
