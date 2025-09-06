@@ -372,7 +372,16 @@ namespace ImageViewer.UI
                 return;
             }
 
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            var dragDrop = new BrowserDragDrop(e.Data);
+            if (dragDrop.Valid)
+            {
+                var fileObj = dragDrop.GetImageFileDirect(FileInfoUtil.ImageExt);
+                if (fileObj is not null)
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+            }
+            else if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
                 if (FileInfoUtil.ImageExt.IsAnySupported(files))
@@ -388,30 +397,53 @@ namespace ImageViewer.UI
 
             ClearDDError();
 
-            var folder = GetSubFolderForAdd(sfMan);
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            var fileList = FileInfoUtil.ImageExt.FilterSupportedFile(files);
-            string lastFilepath = "";
-            foreach (string file in fileList)
+            var dragDrop = new BrowserDragDrop(e.Data);
+            if (dragDrop.Valid)
             {
-                string filepath = folder.Combine(Path.GetFileName(file));
-                if (File.Exists(filepath))
+                var fileObj = dragDrop.GetImageFileDirect(FileInfoUtil.ImageExt);
+                if (fileObj is not null)
                 {
-                    AddDDError(filepath);
+                    var folder = GetSubFolderForAdd(sfMan);
+                    string filepath = folder.Combine(fileObj.FileName);
+                    if (File.Exists(filepath))
+                    {
+                        AddDDError(filepath);
+                        UpdateMarkStatusUI();
+                    }
+                    else
+                    {
+                        fileObj.Save(filepath);
+                        NotifyAddFile(sfMan, filepath);
+                    }
                 }
-                else
-                {
-                    File.Copy(file, filepath);
-                    lastFilepath = filepath;
-                }
-            }
-            if (!string.IsNullOrEmpty(lastFilepath))
-            {
-                NotifyAddFile(sfMan, lastFilepath);
             }
             else
             {
-                UpdateMarkStatusUI();
+                var folder = GetSubFolderForAdd(sfMan);
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+                var fileList = FileInfoUtil.ImageExt.FilterSupportedFile(files);
+                string lastFilepath = "";
+                foreach (string file in fileList)
+                {
+                    string filepath = folder.Combine(Path.GetFileName(file));
+                    if (File.Exists(filepath))
+                    {
+                        AddDDError(filepath);
+                    }
+                    else
+                    {
+                        File.Copy(file, filepath);
+                        lastFilepath = filepath;
+                    }
+                }
+                if (!string.IsNullOrEmpty(lastFilepath))
+                {
+                    NotifyAddFile(sfMan, lastFilepath);
+                }
+                else
+                {
+                    UpdateMarkStatusUI();
+                }
             }
         }
 
